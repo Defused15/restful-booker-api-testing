@@ -1,5 +1,7 @@
 # Restful Booker API Testing
 
+## [View Latest Test Report](https://defused.github.io/restful-booker-api-testing/)
+
 Postman collection for testing the [Restful Booker](https://restful-booker.herokuapp.com) API, covering happy path, negative cases, edge cases, security, and performance scenarios. Automated via Newman and GitHub Actions.
 
 ---
