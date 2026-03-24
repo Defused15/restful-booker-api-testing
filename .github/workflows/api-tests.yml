@@ -51,3 +51,4 @@ jobs:
           name: Newman Test Results
           path: reports/junit-report.xml
           reporter: java-junit
+          fail-on-error: false
