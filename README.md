@@ -1,5 +1,8 @@
 # Restful Booker API Testing
 
+[![API Tests](https://github.com/defused15/restful-booker-api-testing/actions/workflows/api-tests.yml/badge.svg)](https://github.com/defused15/restful-booker-api-testing/actions/workflows/api-tests.yml)
+[![Test Report](https://img.shields.io/badge/Test%20Report-View%20Latest-blue)](https://defused15.github.io/restful-booker-api-testing/)
+
 ## [View Latest Test Report](https://defused15.github.io/restful-booker-api-testing/)
 
 Postman collection for testing the [Restful Booker](https://restful-booker.herokuapp.com) API, covering happy path, negative cases, edge cases, security, and performance scenarios. Automated via Newman and GitHub Actions.
@@ -78,17 +81,31 @@ After each run, the JUnit XML report is uploaded as an artifact and displayed in
 
 ## Environment Variables
 
-> **Note:** `restful-booker.postman_environment.json` is intentionally committed to this repository.
-> It contains only **public test credentials** provided by the Restful Booker demo API — there is no real or sensitive data here.
+Copy `restful-booker.postman_environment.example.json`, rename it to `restful-booker.postman_environment.json`, and fill in your values. The actual environment file is gitignored to keep credentials out of source control.
 
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `base_url` | API base URL | `https://restful-booker.herokuapp.com` |
-| `username` | Auth username (demo) | `admin` |
-| `password` | Auth password (demo) | `password123` |
+| `username` | Auth username | `admin` |
+| `password` | Auth password | `password123` |
 | `token` | Auth token (set automatically by Setup) | _(empty)_ |
 
-Collection variables (`booking_id`, `firstname`, `lastname`, etc.) are set automatically by the Setup requests and shared across tests within the same run.
+---
+
+## Test Data
+
+All test data is hardcoded in the collection. No manual configuration is needed beyond the environment variables above.
+
+| Request | Test data used |
+|---------|----------------|
+| Booking Setup | Brandon Sanderson, price: 30, checkin: 2026-06-01, checkout: 2026-06-10 |
+| Full Update | Steve King, price: 33, checkin: 2026-07-01, checkout: 2026-07-15 |
+| Edge - totalprice zero | Edge Case, price: 0, checkin: 2026-08-01, checkout: 2026-08-10 |
+| Edge - special characters | José García-López, price: 100, checkin: 2026-08-01, checkout: 2027-08-01 |
+| Edge - totalprice as string | Edge Case, price: "not-a-number", checkin: 2026-08-01, checkout: 2026-08-10 |
+| Ghost booking | Ghost User, price: 99, checkin: 2025-01-01, checkout: 2025-01-10 |
+
+Collection variables (`booking_id`, `firstname`, `checkin`, etc.) are set automatically by the Setup scripts and shared across tests within the same run.
 
 ---
 
