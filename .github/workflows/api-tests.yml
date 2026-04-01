@@ -30,6 +30,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Validate required secrets
+        run: |
+          if [ -z "${{ secrets.BASE_URL }}" ] || [ -z "${{ secrets.API_USERNAME }}" ] || [ -z "${{ secrets.API_PASSWORD }}" ]; then
+            echo "ERROR: Required secrets are not configured (BASE_URL, API_USERNAME, API_PASSWORD)"
+            exit 1
+          fi
+
       - name: Create environment file
         run: |
           cat > restful-booker.postman_environment.json << 'EOF'
