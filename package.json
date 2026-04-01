@@ -4,7 +4,7 @@
   "description": "API tests for the Restful-Booker application using Postman and Newman",
   "scripts": {
     "test": "newman run Restful-Booker.postman_collection.json --environment restful-booker.postman_environment.json --reporters cli,htmlextra --reporter-htmlextra-export reports/report.html",
-    "test:ci": "newman run Restful-Booker.postman_collection.json --environment restful-booker.postman_environment.json --reporters cli,junit,htmlextra --reporter-junit-export reports/junit-report.xml --reporter-htmlextra-export reports/index.html"
+    "test:ci": "newman run Restful-Booker.postman_collection.json --environment restful-booker.postman_environment.json --reporters cli,junit,json,htmlextra --reporter-junit-export reports/junit-report.xml --reporter-json-export reports/newman-report.json --reporter-htmlextra-export reports/index.html"
   },
   "devDependencies": {
     "newman": "^6.1.0",
