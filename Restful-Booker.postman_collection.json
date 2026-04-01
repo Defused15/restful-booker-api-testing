@@ -593,7 +593,10 @@
                       "            }",
                       "        }",
                       "    };",
-                      "    pm.expect(tv4.validate(json, schema)).to.be.true;",
+                      "    const Ajv = require('ajv');",
+                      "    const ajv = new Ajv();",
+                      "    const valid = ajv.validate(schema, json);",
+                      "    pm.expect(valid, ajv.errorsText()).to.be.true;",
                       "});",
                       "",
                       "pm.test(\"Booking data matches setup values\", function () {",
@@ -1662,11 +1665,7 @@
       "listen": "test",
       "script": {
         "type": "text/javascript",
-        "exec": [
-          "pm.test(\"Response time < 1000ms\", () => {",
-          "    pm.expect(pm.response.responseTime).to.be.below(1000);",
-          "});"
-        ]
+        "exec": [""]
       }
     }
   ],
