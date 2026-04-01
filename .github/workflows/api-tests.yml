@@ -30,6 +30,22 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Create environment file
+        run: |
+          cat > restful-booker.postman_environment.json << 'EOF'
+          {
+            "id": "restful-booker-env",
+            "name": "Restful-Booker",
+            "values": [
+              { "key": "base_url", "value": "${{ secrets.BASE_URL }}", "type": "default", "enabled": true },
+              { "key": "username", "value": "${{ secrets.API_USERNAME }}", "type": "default", "enabled": true },
+              { "key": "password", "value": "${{ secrets.API_PASSWORD }}", "type": "secret", "enabled": true },
+              { "key": "token", "value": "", "type": "default", "enabled": true }
+            ],
+            "_postman_variable_scope": "environment"
+          }
+          EOF
+
       - name: Create reports directory
         run: mkdir -p reports
 
