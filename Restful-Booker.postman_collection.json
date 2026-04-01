@@ -35,7 +35,11 @@
                       "",
                       "if (json.token) {",
                       "    pm.environment.set(\"token\", json.token);",
-                      "}"
+                      "}",
+                      "",
+                      "pm.test(\"Response time < 500ms\", () => {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                      "});"
                     ],
                     "type": "text/javascript"
                   }
@@ -156,6 +160,10 @@
                       "",
                       "pm.test(\"Error message is Bad credentials\", () => {",
                       "    pm.expect(json.reason).to.eql(\"Bad credentials\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response time < 500ms\", () => {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -202,6 +210,10 @@
                       "",
                       "pm.test(\"Error message is Bad credentials\", () => {",
                       "    pm.expect(json.reason).to.eql(\"Bad credentials\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response time < 500ms\", () => {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -248,6 +260,10 @@
                       "",
                       "pm.test(\"Error message is Bad credentials\", () => {",
                       "    pm.expect(json.reason).to.eql(\"Bad credentials\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response time < 500ms\", () => {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -291,6 +307,10 @@
                       "pm.test(\"SQL Injection did not return a token\", () => {",
                       "    const json = pm.response.json();",
                       "    pm.expect(json).to.not.have.property(\"token\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response time < 500ms\", () => {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -328,6 +348,10 @@
                       "pm.test(\"XSS attempt did not return a token\", () => {",
                       "    const json = pm.response.json();",
                       "    pm.expect(json).to.not.have.property(\"token\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response time < 500ms\", () => {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -435,6 +459,10 @@
                       "    pm.expect(res.booking.additionalneeds).to.eql(req.additionalneeds);",
                       "});",
                       "",
+                      "pm.test(\"Response time < 500ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                      "});",
+                      "",
                       "pm.collectionVariables.set(\"booking_id\", res.bookingid);",
                       "pm.collectionVariables.set(\"firstname\", req.firstname);",
                       "pm.collectionVariables.set(\"lastname\", req.lastname);",
@@ -511,6 +539,10 @@
                       "",
                       "pm.test(\"Content-Type is application/json\", function () {",
                       "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response time < 500ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -572,6 +604,10 @@
                       "",
                       "pm.test(\"Content-Type is application/json\", function () {",
                       "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response time < 500ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -621,6 +657,10 @@
                       "    let bookingIds = json.map(item => item.bookingid);",
                       "    let savedId = Number(pm.collectionVariables.get(\"booking_id\"));",
                       "    pm.expect(bookingIds).to.include(savedId);",
+                      "});",
+                      "",
+                      "pm.test(\"Response time < 500ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -674,6 +714,10 @@
                       "    json.forEach(function (item) {",
                       "        pm.expect(item).to.have.property(\"bookingid\");",
                       "    });",
+                      "});",
+                      "",
+                      "pm.test(\"Response time < 500ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -770,6 +814,10 @@
                       "",
                       "pm.test(\"Content-Type is application/json\", function () {",
                       "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response time < 800ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(800);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -862,6 +910,10 @@
                       "",
                       "pm.test(\"Content-Type is application/json\", function () {",
                       "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response time < 800ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(800);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -924,6 +976,10 @@
                     "exec": [
                       "pm.test(\"Status code is 201\", function () {",
                       "    pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "pm.test(\"Response time < 800ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(800);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -982,6 +1038,10 @@
                     "exec": [
                       "pm.test(\"Status code is 404 - booking no longer exists\", function () {",
                       "    pm.response.to.have.status(404);",
+                      "});",
+                      "",
+                      "pm.test(\"Response time < 500ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -1042,6 +1102,10 @@
                     "exec": [
                       "pm.test(\"Status code is 404\", function () {",
                       "    pm.response.to.have.status(404);",
+                      "});",
+                      "",
+                      "pm.test(\"Response time < 500ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -1127,6 +1191,10 @@
                     "exec": [
                       "pm.test(\"Status code is 403 - unauthorized\", function () {",
                       "    pm.response.to.have.status(403);",
+                      "});",
+                      "",
+                      "pm.test(\"Response time < 800ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(800);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -1174,6 +1242,10 @@
                     "exec": [
                       "pm.test(\"Status code is 403 - unauthorized\", function () {",
                       "    pm.response.to.have.status(403);",
+                      "});",
+                      "",
+                      "pm.test(\"Response time < 800ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(800);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -1219,6 +1291,10 @@
                       "",
                       "pm.test(\"Booking created with totalprice 0\", function () {",
                       "    pm.expect(res.booking.totalprice).to.eql(0);",
+                      "});",
+                      "",
+                      "pm.test(\"Response time < 500ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);",
                       "});",
                       "",
                       "pm.collectionVariables.set(\"edge_booking_id_1\", res.bookingid);"
@@ -1276,6 +1352,10 @@
                       "    pm.expect(res).to.have.property(\"bookingid\");",
                       "});",
                       "",
+                      "pm.test(\"Response time < 500ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                      "});",
+                      "",
                       "pm.collectionVariables.set(\"edge_booking_id_2\", res.bookingid);"
                     ],
                     "type": "text/javascript"
@@ -1326,6 +1406,10 @@
                       "// A stricter API should return 400 Bad Request.",
                       "pm.test(\"API returns 200 - observed: no type validation on totalprice\", function () {",
                       "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Response time < 500ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -1376,6 +1460,10 @@
                       "// This test documents the actual API behavior.",
                       "pm.test(\"Status code is 405 - observed API behavior for non-existent ID\", function () {",
                       "    pm.response.to.have.status(405);",
+                      "});",
+                      "",
+                      "pm.test(\"Response time < 800ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(800);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -1443,6 +1531,10 @@
                     "exec": [
                       "pm.test(\"Edge booking 1 deleted\", function () {",
                       "    pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "pm.test(\"Response time < 800ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(800);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -1496,6 +1588,10 @@
                     "exec": [
                       "pm.test(\"Edge booking 2 deleted\", function () {",
                       "    pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "pm.test(\"Response time < 800ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(800);",
                       "});"
                     ],
                     "type": "text/javascript"
