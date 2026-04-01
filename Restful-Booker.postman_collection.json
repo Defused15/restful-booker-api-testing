@@ -1147,6 +1147,10 @@
                     "exec": [
                       "pm.test(\"Status code is 500 - missing required fields\", function () {",
                       "    pm.response.to.have.status(500);",
+                      "});",
+                      "",
+                      "pm.test(\"Response time < 500ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);",
                       "});"
                     ],
                     "type": "text/javascript"

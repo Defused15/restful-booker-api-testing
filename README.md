@@ -105,7 +105,7 @@ All test data is hardcoded in the collection. No manual configuration is needed 
 | Edge - totalprice zero | Edge Case, price: 0, checkin: 2026-08-01, checkout: 2026-08-10 |
 | Edge - special characters | José García-López, price: 100, checkin: 2026-08-01, checkout: 2027-08-01 |
 | Edge - totalprice as string | Edge Case, price: "not-a-number", checkin: 2026-08-01, checkout: 2026-08-10 |
-| Ghost booking | Ghost User, price: 99, checkin: 2025-01-01, checkout: 2025-01-10 |
+| Edge - update non-existent booking | Ghost User, price: 99, checkin: 2025-01-01, checkout: 2025-01-10 |
 
 Collection variables (`booking_id`, `firstname`, `checkin`, etc.) are set automatically by the Setup scripts and shared across tests within the same run.
 
