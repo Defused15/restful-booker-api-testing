@@ -86,8 +86,8 @@ Copy `restful-booker.postman_environment.example.json`, rename it to `restful-bo
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `base_url` | API base URL | `https://restful-booker.herokuapp.com` |
-| `username` | Auth username | `admin` |
-| `password` | Auth password | `password123` |
+| `username` | Auth username | _(set in your environment file)_ |
+| `password` | Auth password | _(set in your environment file)_ |
 | `token` | Auth token (set automatically by Setup) | _(empty)_ |
 
 ---
