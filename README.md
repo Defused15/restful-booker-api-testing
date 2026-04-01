@@ -19,7 +19,7 @@ Postman collection for testing the [Restful Booker](https://restful-booker.herok
 | Auth | 03 - Security | SQL injection, XSS attempt |
 | Auth | 04 - Performance | Response time < 500ms |
 | Booking | 00 - Setup | Create booking, store variables |
-| Booking | 01 - Happy Path | Get all, get by id (schema validation), filter by name, filter by dates, full update, partial update, delete, verify deletion |
+| Booking | 01 - Happy Path | Get all, get by id (schema validation), filter by name, filter by dates (accepts params; filtering accuracy not validated — known API limitation), full update, partial update, delete, verify deletion |
 | Booking | 02 - Negative Cases | Invalid id, missing required fields, update/delete without auth |
 | Booking | 03 - Edge Cases | totalprice = 0, special characters in name, wrong type for totalprice, update non-existent booking |
 
@@ -38,7 +38,7 @@ Postman collection for testing the [Restful Booker](https://restful-booker.herok
 2. Open Postman → **Import** → select `Restful-Booker.postman_collection.json`
 3. Import the environment: **Import** → select `restful-booker.postman_environment.json`
 4. Select the **Restful-Booker** environment from the environment dropdown
-5. Run the full collection with the **Collection Runner** (maintain folder order so Setup runs first)
+5. Run the full collection with the **Collection Runner** (maintain folder order so Setup runs first — if folders run out of order, `token` and `booking_id` won't be initialized and all downstream tests will fail)
 
 ---
 
