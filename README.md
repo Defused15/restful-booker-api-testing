@@ -90,6 +90,8 @@ Copy `restful-booker.postman_environment.example.json`, rename it to `restful-bo
 | `password` | Auth password | _(set in your environment file)_ |
 | `token` | Auth token (set automatically by Setup) | _(empty)_ |
 
+> **Note on test report visibility:** The HTML report displays resolved request bodies, including the `username` and `password` sent to `/auth`. This is intentional — Restful Booker is a public demo API with shared credentials, so no real sensitive data is exposed. If you adapt this suite for a private API, consider adding `--reporter-htmlextra-omitRequestBodies` to the Newman scripts to hide request payloads from the report.
+
 ---
 
 ## Test Data
