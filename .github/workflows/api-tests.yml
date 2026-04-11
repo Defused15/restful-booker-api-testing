@@ -134,18 +134,18 @@ jobs:
             getReq.end();
           "
 
-        - name: Trigger Test Hub Rebuild
-          if: always()
-          env:
-            HUB_TOKEN: ${{ secrets.HUB_TOKEN }}
-            HUB_REPO: Defused15/test-hub
-            PROJECT_NAME: Restful-Booker
-          run: |
-            echo "🚀 Triggering build in $HUB_REPO..."
-            GH_TOKEN=$HUB_TOKEN gh api repos/$HUB_REPO/dispatches \
-              --method POST \
-              -f event_type="test-hub-trigger" \
-              -f client_payload[project]=$PROJECT_NAME
+      - name: Trigger Test Hub Rebuild
+        if: always()
+        env:
+          HUB_TOKEN: ${{ secrets.HUB_TOKEN }}
+          HUB_REPO: Defused15/test-hub
+          PROJECT_NAME: Restful-Booker
+        run: |
+          echo "🚀 Triggering build in $HUB_REPO..."
+          GH_TOKEN=$HUB_TOKEN gh api repos/$HUB_REPO/dispatches \
+            --method POST \
+            -f event_type="test-hub-trigger" \
+            -f client_payload[project]=$PROJECT_NAME
 
       - name: Upload JUnit artifact
         if: always()
