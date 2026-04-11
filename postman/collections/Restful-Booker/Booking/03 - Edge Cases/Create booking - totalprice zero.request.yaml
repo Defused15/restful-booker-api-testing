@@ -1,0 +1,49 @@
+$kind: http-request
+url: "{{base_url}}/booking"
+method: POST
+headers:
+  Content-Type: application/json
+  Accept: application/json
+body:
+  type: json
+  content: "{\r
+
+    \    \"firstname\": \"Edge\",\r
+
+    \    \"lastname\": \"Case\",\r
+
+    \    \"totalprice\": 0,\r
+
+    \    \"depositpaid\": false,\r
+
+    \    \"bookingdates\": {\r
+
+    \        \"checkin\": \"2026-08-01\",\r
+
+    \        \"checkout\": \"2026-08-10\"\r
+
+    \    },\r
+
+    \    \"additionalneeds\": \"\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: |-
+      let res = pm.response.json();
+
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test("Booking created with totalprice 0", function () {
+          pm.expect(res.booking.totalprice).to.eql(0);
+      });
+
+      pm.test("Response time < 500ms", function () {
+          pm.expect(pm.response.responseTime).to.be.below(500);
+      });
+
+      pm.collectionVariables.set("edge_booking_id_1", res.bookingid);
+    language: text/javascript
+order: 1000

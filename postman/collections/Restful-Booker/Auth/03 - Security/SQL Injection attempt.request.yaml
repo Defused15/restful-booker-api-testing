@@ -1,0 +1,25 @@
+$kind: http-request
+url: "{{base_url}}/auth"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "username": "{{username}}' OR '1'='1",
+      "password": "{{password}}"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("SQL Injection did not return a token", () => {
+          const json = pm.response.json();
+          pm.expect(json).to.not.have.property("token");
+      });
+
+      pm.test("Response time < 500ms", () => {
+          pm.expect(pm.response.responseTime).to.be.below(500);
+      });
+    language: text/javascript
+order: 1000

@@ -1,0 +1,4 @@
+$kind: collection
+description: Verifies that valid credentials return a well-formed token with the
+  correct response shape.
+order: 2000

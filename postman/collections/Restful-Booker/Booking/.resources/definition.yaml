@@ -1,0 +1,3 @@
+$kind: collection
+description: Tests for the /booking endpoint covering CRUD operations on booking resources.
+order: 2000

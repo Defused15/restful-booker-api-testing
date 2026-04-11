@@ -1,0 +1,21 @@
+$kind: collection
+description: Test suite for the Restful Booker API covering authentication and
+  booking management. Includes happy path, negative cases, edge cases, security,
+  and performance scenarios.
+variables:
+  booking_id: ""
+  firstname: ""
+  lastname: ""
+  totalprice: ""
+  depositpaid: ""
+  checkin: ""
+  checkout: ""
+  additionalneeds: ""
+  edge_booking_id_1: ""
+  edge_booking_id_2: ""
+auth:
+  - id: 29aaf33a-58e2-4ef6-978e-bf66d5cc9779
+    type: bearer
+    name: bearer auth
+    credentials:
+      token: "{{token}}"

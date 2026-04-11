@@ -1,0 +1,50 @@
+$kind: http-request
+url: "{{base_url}}/booking"
+method: POST
+headers:
+  Content-Type: application/json
+  Accept: application/json
+body:
+  type: json
+  content: "{\r
+
+    \    \"firstname\": \"Edge\",\r
+
+    \    \"lastname\": \"Case\",\r
+
+    \    \"totalprice\": \"not-a-number\",\r
+
+    \    \"depositpaid\": true,\r
+
+    \    \"bookingdates\": {\r
+
+    \        \"checkin\": \"2026-08-01\",\r
+
+    \        \"checkout\": \"2026-08-10\"\r
+
+    \    },\r
+
+    \    \"additionalneeds\": \"\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: >-
+      // Restful-Booker does not validate field types: sending totalprice as a
+      string
+
+      // returns 200 and the API coerces or ignores the value.
+
+      // A stricter API should return 400 Bad Request.
+
+      pm.test("API returns 200 - observed: no type validation on totalprice",
+      function () {
+          pm.response.to.have.status(200);
+      });
+
+
+      pm.test("Response time < 500ms", function () {
+          pm.expect(pm.response.responseTime).to.be.below(500);
+      });
+    language: text/javascript
+order: 3000

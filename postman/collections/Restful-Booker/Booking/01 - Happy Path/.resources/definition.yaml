@@ -1,0 +1,3 @@
+$kind: collection
+description: Verifies all supported read and write operations against a valid booking.
+order: 2000

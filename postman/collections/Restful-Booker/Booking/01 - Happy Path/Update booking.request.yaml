@@ -1,0 +1,87 @@
+$kind: http-request
+url: "{{base_url}}/booking/{{booking_id}}"
+method: PUT
+headers:
+  Content-Type: application/json
+  Accept: application/json
+  Cookie: token={{token}}
+body:
+  type: json
+  content: "{\r
+
+    \    \"firstname\": \"Steve\",\r
+
+    \    \"lastname\": \"King\",\r
+
+    \    \"totalprice\": 33,\r
+
+    \    \"depositpaid\": true,\r
+
+    \    \"bookingdates\": {\r
+
+    \        \"checkin\": \"2026-07-01\",\r
+
+    \        \"checkout\": \"2026-07-15\"\r
+
+    \    },\r
+
+    \    \"additionalneeds\": \"Breakfast\"\r
+
+    }"
+auth:
+  type: basic
+  credentials:
+    password: "{{password}}"
+    username: "{{username}}"
+scripts:
+  - type: afterResponse
+    code: >-
+      let json = pm.response.json();
+
+      let req = JSON.parse(pm.request.body.raw);
+
+
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+
+
+      pm.collectionVariables.set("firstname", req.firstname);
+
+      pm.collectionVariables.set("lastname", req.lastname);
+
+      pm.collectionVariables.set("totalprice", req.totalprice);
+
+      pm.collectionVariables.set("depositpaid", req.depositpaid);
+
+      pm.collectionVariables.set("checkin", req.bookingdates.checkin);
+
+      pm.collectionVariables.set("checkout", req.bookingdates.checkout);
+
+      pm.collectionVariables.set("additionalneeds", req.additionalneeds);
+
+
+      pm.test("All fields were updated", function () {
+          pm.expect(json.firstname).to.eql(pm.collectionVariables.get("firstname"));
+          pm.expect(json.lastname).to.eql(pm.collectionVariables.get("lastname"));
+          pm.expect(json.totalprice).to.eql(Number(pm.collectionVariables.get("totalprice")));
+          pm.expect(json.depositpaid).to.eql(
+              pm.collectionVariables.get("depositpaid") === "true" ||
+              pm.collectionVariables.get("depositpaid") === true
+          );
+          pm.expect(json.bookingdates.checkin).to.eql(pm.collectionVariables.get("checkin"));
+          pm.expect(json.bookingdates.checkout).to.eql(pm.collectionVariables.get("checkout"));
+          pm.expect(json.additionalneeds).to.eql(pm.collectionVariables.get("additionalneeds"));
+      });
+
+
+      pm.test("Content-Type is application/json", function () {
+          pm.expect(pm.response.headers.get("Content-Type")).to.include("application/json");
+      });
+
+
+      pm.test("Response time < 800ms", function () {
+          pm.expect(pm.response.responseTime).to.be.below(800);
+      });
+    language: text/javascript
+order: 5000

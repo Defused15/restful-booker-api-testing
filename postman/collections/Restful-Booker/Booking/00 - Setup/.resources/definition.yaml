@@ -1,0 +1,4 @@
+$kind: collection
+description: Creates the baseline booking used by all happy path and negative
+  tests in this module.
+order: 1000

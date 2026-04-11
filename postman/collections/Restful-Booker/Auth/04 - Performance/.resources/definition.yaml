@@ -1,0 +1,3 @@
+$kind: collection
+description: Spot-checks API response time to catch latency regressions.
+order: 5000

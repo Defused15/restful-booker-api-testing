@@ -1,0 +1,3 @@
+$kind: collection
+description: Verifies the API rejects invalid credentials with the expected error response.
+order: 3000

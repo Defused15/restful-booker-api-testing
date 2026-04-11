@@ -1,0 +1,57 @@
+$kind: http-request
+name: Update non-existent booking (API returns 405 - semantically should be 404)
+url: "{{base_url}}/booking/99999999"
+method: PUT
+headers:
+  Content-Type: application/json
+  Accept: application/json
+  Cookie: token={{token}}
+body:
+  type: json
+  content: "{\r
+
+    \    \"firstname\": \"Ghost\",\r
+
+    \    \"lastname\": \"User\",\r
+
+    \    \"totalprice\": 99,\r
+
+    \    \"depositpaid\": false,\r
+
+    \    \"bookingdates\": {\r
+
+    \        \"checkin\": \"2025-01-01\",\r
+
+    \        \"checkout\": \"2025-01-10\"\r
+
+    \    },\r
+
+    \    \"additionalneeds\": \"\"\r
+
+    }"
+auth:
+  type: basic
+  credentials:
+    password: "{{password}}"
+    username: "{{username}}"
+scripts:
+  - type: afterResponse
+    code: >-
+      // Restful-Booker returns 405 (Method Not Allowed) for non-existent
+      booking IDs.
+
+      // The semantically correct response would be 404 (Not Found).
+
+      // This test documents the actual API behavior.
+
+      pm.test("Status code is 405 - observed API behavior for non-existent ID",
+      function () {
+          pm.response.to.have.status(405);
+      });
+
+
+      pm.test("Response time < 800ms", function () {
+          pm.expect(pm.response.responseTime).to.be.below(800);
+      });
+    language: text/javascript
+order: 4000
