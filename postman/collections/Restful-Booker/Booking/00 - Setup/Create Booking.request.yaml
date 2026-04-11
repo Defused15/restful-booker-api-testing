@@ -1,0 +1,82 @@
+$kind: http-request
+url: "{{base_url}}/booking"
+method: POST
+headers:
+  Content-Type: application/json
+  Accept: application/json
+body:
+  type: json
+  content: "{\r
+
+    \    \"firstname\" : \"Brandon\",\r
+
+    \    \"lastname\" : \"Sanderson\",\r
+
+    \    \"totalprice\" : 30,\r
+
+    \    \"depositpaid\" : true,\r
+
+    \    \"bookingdates\" : {\r
+
+    \        \"checkin\" : \"2026-06-01\",\r
+
+    \        \"checkout\" : \"2026-06-10\"\r
+
+    \    },\r
+
+    \    \"additionalneeds\" : \"Laundry Service\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: >-
+      let res = pm.response.json();
+
+      let req = JSON.parse(pm.request.body.raw);
+
+
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+
+
+      pm.test("Booking created with an id", function () {
+          pm.expect(res).to.have.property("bookingid");
+          pm.expect(res.bookingid).to.be.a("number");
+      });
+
+
+      pm.test("Response contains booking with all sent fields", function () {
+          pm.expect(res).to.have.property("booking");
+          pm.expect(res.booking.firstname).to.eql(req.firstname);
+          pm.expect(res.booking.lastname).to.eql(req.lastname);
+          pm.expect(res.booking.totalprice).to.eql(req.totalprice);
+          pm.expect(res.booking.depositpaid).to.eql(req.depositpaid);
+          pm.expect(res.booking.bookingdates.checkin).to.eql(req.bookingdates.checkin);
+          pm.expect(res.booking.bookingdates.checkout).to.eql(req.bookingdates.checkout);
+          pm.expect(res.booking.additionalneeds).to.eql(req.additionalneeds);
+      });
+
+
+      pm.test("Response time < 500ms", function () {
+          pm.expect(pm.response.responseTime).to.be.below(500);
+      });
+
+
+      pm.collectionVariables.set("booking_id", res.bookingid);
+
+      pm.collectionVariables.set("firstname", req.firstname);
+
+      pm.collectionVariables.set("lastname", req.lastname);
+
+      pm.collectionVariables.set("totalprice", req.totalprice);
+
+      pm.collectionVariables.set("depositpaid", req.depositpaid);
+
+      pm.collectionVariables.set("checkin", req.bookingdates.checkin);
+
+      pm.collectionVariables.set("checkout", req.bookingdates.checkout);
+
+      pm.collectionVariables.set("additionalneeds", req.additionalneeds);
+    language: text/javascript
+order: 1000

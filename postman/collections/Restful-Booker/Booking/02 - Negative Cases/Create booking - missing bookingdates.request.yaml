@@ -1,0 +1,33 @@
+$kind: http-request
+url: "{{base_url}}/booking"
+method: POST
+headers:
+  Content-Type: application/json
+  Accept: application/json
+body:
+  type: json
+  content: "{\r
+
+    \    \"firstname\" : \"Brandon\",\r
+
+    \    \"lastname\" : \"Sanderson\",\r
+
+    \    \"totalprice\" : 30,\r
+
+    \    \"depositpaid\" : true,\r
+
+    \    \"additionalneeds\" : \"Laundry Service\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 500 - missing required fields", function () {
+          pm.response.to.have.status(500);
+      });
+
+      pm.test("Response time < 500ms", function () {
+          pm.expect(pm.response.responseTime).to.be.below(500);
+      });
+    language: text/javascript
+order: 2000

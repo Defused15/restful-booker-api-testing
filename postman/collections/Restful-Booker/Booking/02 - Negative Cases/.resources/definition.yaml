@@ -1,0 +1,4 @@
+$kind: collection
+description: Verifies the API returns appropriate errors for invalid inputs and
+  unauthorized requests.
+order: 3000

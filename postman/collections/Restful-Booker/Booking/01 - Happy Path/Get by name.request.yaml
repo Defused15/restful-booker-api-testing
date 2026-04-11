@@ -1,0 +1,40 @@
+$kind: http-request
+url: "{{base_url}}/booking?firstname={{firstname}}&lastname={{lastname}}"
+method: GET
+queryParams:
+  firstname: "{{firstname}}"
+  lastname: "{{lastname}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      let json = pm.response.json();
+
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test("Response is an array", function () {
+          pm.expect(json).to.be.an("array");
+      });
+
+      pm.test("At least one result exists", function () {
+          pm.expect(json.length).to.be.greaterThan(0);
+      });
+
+      pm.test("Each item has bookingid", function () {
+          json.forEach(item => {
+              pm.expect(item).to.have.property("bookingid");
+          });
+      });
+
+      pm.test("Created booking id exists in response", function () {
+          let bookingIds = json.map(item => item.bookingid);
+          let savedId = Number(pm.collectionVariables.get("booking_id"));
+          pm.expect(bookingIds).to.include(savedId);
+      });
+
+      pm.test("Response time < 500ms", function () {
+          pm.expect(pm.response.responseTime).to.be.below(500);
+      });
+    language: text/javascript
+order: 3000

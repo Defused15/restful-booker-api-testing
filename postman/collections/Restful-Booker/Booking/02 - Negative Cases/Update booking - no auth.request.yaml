@@ -1,0 +1,41 @@
+$kind: http-request
+url: "{{base_url}}/booking/{{booking_id}}"
+method: PUT
+headers:
+  Content-Type: application/json
+  Accept: application/json
+body:
+  type: json
+  content: "{\r
+
+    \    \"firstname\": \"Steve\",\r
+
+    \    \"lastname\": \"King\",\r
+
+    \    \"totalprice\": 33,\r
+
+    \    \"depositpaid\": true,\r
+
+    \    \"bookingdates\": {\r
+
+    \        \"checkin\": \"2026-07-01\",\r
+
+    \        \"checkout\": \"2026-07-15\"\r
+
+    \    },\r
+
+    \    \"additionalneeds\": \"Breakfast\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 403 - unauthorized", function () {
+          pm.response.to.have.status(403);
+      });
+
+      pm.test("Response time < 800ms", function () {
+          pm.expect(pm.response.responseTime).to.be.below(800);
+      });
+    language: text/javascript
+order: 3000

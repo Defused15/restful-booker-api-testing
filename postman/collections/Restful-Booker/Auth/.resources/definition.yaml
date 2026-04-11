@@ -1,0 +1,3 @@
+$kind: collection
+description: Tests for the POST /auth endpoint that issues access tokens.
+order: 1000

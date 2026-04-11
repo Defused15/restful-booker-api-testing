@@ -1,0 +1,17 @@
+$kind: http-request
+url: "{{base_url}}/booking/{{booking_id}}"
+method: DELETE
+headers:
+  Content-Type: application/json
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 403 - unauthorized", function () {
+          pm.response.to.have.status(403);
+      });
+
+      pm.test("Response time < 800ms", function () {
+          pm.expect(pm.response.responseTime).to.be.below(800);
+      });
+    language: text/javascript
+order: 4000

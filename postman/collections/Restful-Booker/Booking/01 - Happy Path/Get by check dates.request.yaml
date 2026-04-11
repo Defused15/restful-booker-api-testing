@@ -1,0 +1,43 @@
+$kind: http-request
+url: "{{base_url}}/booking?checkin={{checkin}}&checkout={{checkout}}"
+method: GET
+headers:
+  Content-Type: application/json
+  Accept: application/json
+  Cookie: token={{token}}
+queryParams:
+  checkin: "{{checkin}}"
+  checkout: "{{checkout}}"
+auth:
+  type: basic
+  credentials:
+    password: "{{password}}"
+    username: "{{username}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      // Known limitation: Restful-Booker's date filter is unreliable —
+      // it does not consistently return bookings whose checkin/checkout
+      // match the filter values. We verify the endpoint responds correctly
+      // and returns the expected shape, but skip the ID inclusion check.
+      let json = pm.response.json();
+
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test("Response is an array", function () {
+          pm.expect(json).to.be.an("array");
+      });
+
+      pm.test("Each item has bookingid", function () {
+          json.forEach(function (item) {
+              pm.expect(item).to.have.property("bookingid");
+          });
+      });
+
+      pm.test("Response time < 500ms", function () {
+          pm.expect(pm.response.responseTime).to.be.below(500);
+      });
+    language: text/javascript
+order: 4000

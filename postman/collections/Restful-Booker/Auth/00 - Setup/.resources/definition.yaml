@@ -1,0 +1,4 @@
+$kind: collection
+description: Generates the auth token stored in the environment for use by all
+  authenticated requests.
+order: 1000
