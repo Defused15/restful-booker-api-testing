@@ -1,3 +1,5 @@
 node_modules/
 reports/
 restful-booker.postman_environment.json
+test-results/
+tests/report/.site/

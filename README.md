@@ -2,11 +2,12 @@
 
 [![API Tests](https://github.com/defused15/restful-booker-api-testing/actions/workflows/api-tests.yml/badge.svg)](https://github.com/defused15/restful-booker-api-testing/actions/workflows/api-tests.yml)
 [![QA Test Hub](https://img.shields.io/badge/QA%20Test%20Hub-Dashboard-blue)](https://qa.rcastillo.dev/projects/Restful-Booker.html)
-[![Raw Report](https://img.shields.io/badge/Raw%20Report-Request%20%26%20Response%20Details-lightgrey)](https://defused15.github.io/restful-booker-api-testing/)
+[![Request Report](https://img.shields.io/badge/Request%20Report-Assertions%2C%20Requests%20%26%20Responses-lightgrey)](https://defused15.github.io/restful-booker-api-testing/)
+[![Raw Report](https://img.shields.io/badge/Raw%20Report-htmlextra-lightgrey)](https://defused15.github.io/restful-booker-api-testing/htmlextra.html)
 
 ## [View Test Dashboard on the QA Test Hub](https://qa.rcastillo.dev/projects/Restful-Booker.html)
 
-The QA Test Hub shows run history, pass-rate and duration trends, slowest requests, and each request's assertions. For full request and response bodies and headers of the latest run, see the [raw HTML report](https://defused15.github.io/restful-booker-api-testing/).
+The QA Test Hub shows run history, pass-rate and duration trends, slowest requests, and each request's assertions. For each request's assertions, headers and bodies in the latest run, see the [request report](https://defused15.github.io/restful-booker-api-testing/) (credentials and tokens masked). The previous [htmlextra report](https://defused15.github.io/restful-booker-api-testing/htmlextra.html) is still published.
 
 Postman collection for testing the [Restful Booker](https://restful-booker.herokuapp.com) API, covering happy path, negative cases, edge cases, security, and performance scenarios. Automated via Newman and GitHub Actions.
 
@@ -82,7 +83,7 @@ On scheduled runs, a `keepalive` job re-enables the workflow through the GitHub 
 
 After each run, the JUnit XML report is uploaded as an artifact and displayed inline in the GitHub Actions summary.
 
-Runs on `main` (push, schedule or manual) publish the Newman JSON report to the [QA Test Hub](https://qa.rcastillo.dev/projects/Restful-Booker.html) and deploy the raw HTML report to GitHub Pages. Pull request runs only test and report in the PR, so they never overwrite the published report.
+Runs on `main` (push, schedule or manual) publish the Newman JSON report to the [QA Test Hub](https://qa.rcastillo.dev/projects/Restful-Booker.html) and deploy the request report to GitHub Pages. Only the built page (`reports/site/`) is deployed, never the raw Newman JSON. Pull request runs only test and report in the PR, so they never overwrite the published report.
 
 Third-party actions are pinned to full commit SHAs, with the release tag in a comment.
 
@@ -121,6 +122,24 @@ Collection variables (`booking_id`, `firstname`, `checkin`, etc.) are set automa
 
 ---
 
+## Request Report
+
+`scripts/report/build-report.mjs` turns `reports/newman-report.json` into a static page (`index.html` plus `assets/`) with a summary, failing requests, a searchable table and a drawer with each request's assertions, request and response. Authorization, cookie and token headers, and password, token and key fields in bodies and URLs, are replaced with `••••`.
+
+```bash
+npm run test:ci                                              # produces reports/newman-report.json
+npm run report:build -- reports/newman-report.json reports/site
+```
+
+The page is covered by build tests (escaping and redaction) and Playwright tests (keyboard, touch, paging and filtering stability, URL state, contrast in both themes, hostile input). Screenshots are written to `test-results/screenshots/`.
+
+```bash
+npx playwright install chromium   # once
+npm run test:report
+```
+
+---
+
 ## Collection Source of Truth
 
 `Restful-Booker.postman_collection.json` (v2.1) is the source of truth: Newman runs it locally and in CI. The `postman/` folder is a Postman v3 (YAML) copy for the Postman app's local and git-connected workflow. After changing the JSON collection, regenerate the copy with the [Postman CLI](https://learning.postman.com/docs/postman-cli/postman-cli-installation/):
@@ -141,6 +160,8 @@ restful-booker-api-testing/
 │   └── workflows/
 │       └── api-tests.yml                    # GitHub Actions CI workflow
 ├── reports/                                 # Generated test reports (gitignored)
+├── scripts/report/                         # Request report builder and page assets
+├── tests/                                   # Report page tests (node:test and Playwright)
 ├── postman/                                 # Postman v3 (YAML) copy, generated from the JSON collection
 ├── Restful-Booker.postman_collection.json   # Main collection (source of truth)
 ├── restful-booker.postman_environment.json  # Environment variables (gitignored)
