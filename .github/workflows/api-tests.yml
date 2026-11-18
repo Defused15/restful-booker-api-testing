@@ -90,13 +90,10 @@ jobs:
         run: npm run test:ci
 
       # Request-level report (assertions, requests and responses, secrets masked).
-      # Only reports/site/ is published to GitHub Pages, never the raw Newman
-      # JSON; htmlextra stays available there as htmlextra.html.
+      # Only reports/site/ is published to GitHub Pages, never the raw Newman JSON.
       - name: Build HTML report
         if: always() && hashFiles('reports/newman-report.json') != ''
-        run: |
-          npm run report:build -- reports/newman-report.json reports/site
-          if [ -f reports/htmlextra.html ]; then cp reports/htmlextra.html reports/site/; fi
+        run: npm run report:build -- reports/newman-report.json reports/site
 
       # Only main publishes to the QA Hub: pull request runs (and forks without
       # secrets) must not overwrite the published report.

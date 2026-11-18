@@ -3,15 +3,14 @@
   "version": "1.0.0",
   "description": "API tests for the Restful-Booker application using Postman and Newman",
   "scripts": {
-    "test": "newman run Restful-Booker.postman_collection.json --environment restful-booker.postman_environment.json --reporters cli,htmlextra --reporter-htmlextra-export reports/report.html",
-    "test:ci": "newman run Restful-Booker.postman_collection.json --environment restful-booker.postman_environment.json --reporters cli,junit,json,htmlextra --reporter-junit-export reports/junit-report.xml --reporter-json-export reports/newman-report.json --reporter-htmlextra-export reports/htmlextra.html",
+    "test": "newman run Restful-Booker.postman_collection.json --environment restful-booker.postman_environment.json --reporters cli,json --reporter-json-export reports/newman-report.json && npm run -s report:build -- reports/newman-report.json reports/site",
+    "test:ci": "newman run Restful-Booker.postman_collection.json --environment restful-booker.postman_environment.json --reporters cli,junit,json --reporter-junit-export reports/junit-report.xml --reporter-json-export reports/newman-report.json",
     "report:build": "node scripts/report/build-report.mjs",
     "test:report": "node --test tests/build/*.test.mjs && playwright test",
     "postman:sync": "rm -rf postman/collections/Restful-Booker && postman collection migrate Restful-Booker.postman_collection.json -o postman/collections/Restful-Booker"
   },
   "devDependencies": {
     "@playwright/test": "1.65.1",
-    "newman": "^6.1.0",
-    "newman-reporter-htmlextra": "^1.23.1"
+    "newman": "^6.1.0"
   }
 }

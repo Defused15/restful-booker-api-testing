@@ -3,11 +3,10 @@
 [![API Tests](https://github.com/defused15/restful-booker-api-testing/actions/workflows/api-tests.yml/badge.svg)](https://github.com/defused15/restful-booker-api-testing/actions/workflows/api-tests.yml)
 [![QA Test Hub](https://img.shields.io/badge/QA%20Test%20Hub-Dashboard-blue)](https://qa.rcastillo.dev/projects/Restful-Booker.html)
 [![Request Report](https://img.shields.io/badge/Request%20Report-Assertions%2C%20Requests%20%26%20Responses-lightgrey)](https://defused15.github.io/restful-booker-api-testing/)
-[![Raw Report](https://img.shields.io/badge/Raw%20Report-htmlextra-lightgrey)](https://defused15.github.io/restful-booker-api-testing/htmlextra.html)
 
 ## [View Test Dashboard on the QA Test Hub](https://qa.rcastillo.dev/projects/Restful-Booker.html)
 
-The QA Test Hub shows run history, pass-rate and duration trends, slowest requests, and each request's assertions. For each request's assertions, headers and bodies in the latest run, see the [request report](https://defused15.github.io/restful-booker-api-testing/) (credentials and tokens masked). The previous [htmlextra report](https://defused15.github.io/restful-booker-api-testing/htmlextra.html) is still published.
+The QA Test Hub shows run history, pass-rate and duration trends, slowest requests, and each request's assertions. For each request's assertions, headers and bodies in the latest run, see the [request report](https://defused15.github.io/restful-booker-api-testing/) (credentials and tokens masked).
 
 Postman collection for testing the [Restful Booker](https://restful-booker.herokuapp.com) API, covering happy path, negative cases, edge cases, security, and performance scenarios. Automated via Newman and GitHub Actions.
 
@@ -54,13 +53,13 @@ Install dependencies:
 npm ci
 ```
 
-Run with HTML report (local):
+Run the suite and build the HTML report (local):
 
 ```bash
 npm test
 ```
 
-The HTML report will be generated at `reports/report.html`.
+The report is generated at `reports/site/index.html`.
 
 Run with JUnit report (CI):
 
@@ -85,7 +84,7 @@ After each run, the JUnit XML report is uploaded as an artifact and displayed in
 
 Runs on `main` (push, schedule or manual) publish the Newman JSON report to the [QA Test Hub](https://qa.rcastillo.dev/projects/Restful-Booker.html) and deploy the request report to GitHub Pages. Only the built page (`reports/site/`) is deployed, never the raw Newman JSON. Pull request runs only test and report in the PR, so they never overwrite the published report.
 
-Third-party actions are pinned to full commit SHAs, with the release tag in a comment.
+Third-party actions are pinned to full commit SHAs, with the release tag in a comment. Dependabot (`.github/dependabot.yml`) opens one grouped PR a month for action updates and one for npm dev tools.
 
 ---
 
@@ -100,7 +99,7 @@ Copy `restful-booker.postman_environment.example.json`, rename it to `restful-bo
 | `password` | Auth password | _(set in your environment file)_ |
 | `token` | Auth token (set automatically by Setup) | _(empty)_ |
 
-> **Note on test report visibility:** The HTML report displays resolved request bodies, including the `username` and `password` sent to `/auth`. This is intentional — Restful Booker is a public demo API with shared credentials, so no real sensitive data is exposed. If you adapt this suite for a private API, consider adding `--reporter-htmlextra-omitRequestBodies` to the Newman scripts to hide request payloads from the report.
+> **Note on test report visibility:** The request report masks credentials before publishing: `Authorization`, `Cookie` and `Set-Cookie` headers, and password, token and key values in bodies and URLs, are shown as `••••`. The raw Newman JSON is not published to GitHub Pages.
 
 ---
 
