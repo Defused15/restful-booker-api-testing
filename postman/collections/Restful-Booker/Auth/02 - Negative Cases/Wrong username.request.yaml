@@ -1,4 +1,5 @@
 $kind: http-request
+description: Sends a non-existent username. Expects the API to return a 'Bad credentials' reason.
 url: "{{base_url}}/auth"
 method: POST
 headers:

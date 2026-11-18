@@ -1,4 +1,5 @@
 $kind: http-request
+description: Submits a booking without the required bookingdates field. Expects a 4xx error response.
 url: "{{base_url}}/booking"
 method: POST
 headers:

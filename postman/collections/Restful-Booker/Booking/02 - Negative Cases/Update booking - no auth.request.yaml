@@ -1,4 +1,5 @@
 $kind: http-request
+description: Attempts a full update without providing an auth token. Expects 403 Forbidden.
 url: "{{base_url}}/booking/{{booking_id}}"
 method: PUT
 headers:

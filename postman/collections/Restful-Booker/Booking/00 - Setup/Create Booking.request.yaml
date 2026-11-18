@@ -1,4 +1,5 @@
 $kind: http-request
+description: Creates a booking for Brandon Sanderson and stores the booking_id and all field values as collection variables for downstream tests.
 url: "{{base_url}}/booking"
 method: POST
 headers:
@@ -29,22 +30,18 @@ body:
     }"
 scripts:
   - type: afterResponse
-    code: >-
+    code: |-
       let res = pm.response.json();
-
       let req = JSON.parse(pm.request.body.raw);
-
 
       pm.test("Status code is 200", function () {
           pm.response.to.have.status(200);
       });
 
-
       pm.test("Booking created with an id", function () {
           pm.expect(res).to.have.property("bookingid");
           pm.expect(res.bookingid).to.be.a("number");
       });
-
 
       pm.test("Response contains booking with all sent fields", function () {
           pm.expect(res).to.have.property("booking");
@@ -56,27 +53,25 @@ scripts:
           pm.expect(res.booking.bookingdates.checkout).to.eql(req.bookingdates.checkout);
           pm.expect(res.booking.additionalneeds).to.eql(req.additionalneeds);
       });
-
+      pm.test("Schema is valid", function () {
+          const Ajv = require('ajv');
+          const ajv = new Ajv();
+          const schema = JSON.parse(pm.collectionVariables.get("booking_schema"));
+          const valid = ajv.validate(schema, res.booking);
+          pm.expect(valid, ajv.errorsText()).to.be.true;
+      });
 
       pm.test("Response time < 500ms", function () {
           pm.expect(pm.response.responseTime).to.be.below(500);
       });
 
-
       pm.collectionVariables.set("booking_id", res.bookingid);
-
       pm.collectionVariables.set("firstname", req.firstname);
-
       pm.collectionVariables.set("lastname", req.lastname);
-
       pm.collectionVariables.set("totalprice", req.totalprice);
-
       pm.collectionVariables.set("depositpaid", req.depositpaid);
-
       pm.collectionVariables.set("checkin", req.bookingdates.checkin);
-
       pm.collectionVariables.set("checkout", req.bookingdates.checkout);
-
       pm.collectionVariables.set("additionalneeds", req.additionalneeds);
     language: text/javascript
 order: 1000

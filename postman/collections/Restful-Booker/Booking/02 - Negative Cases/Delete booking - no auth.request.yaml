@@ -1,4 +1,5 @@
 $kind: http-request
+description: Attempts to delete a booking without an auth token. Expects 403 Forbidden.
 url: "{{base_url}}/booking/{{booking_id}}"
 method: DELETE
 headers:
@@ -14,4 +15,4 @@ scripts:
           pm.expect(pm.response.responseTime).to.be.below(800);
       });
     language: text/javascript
-order: 4000
+order: 6000

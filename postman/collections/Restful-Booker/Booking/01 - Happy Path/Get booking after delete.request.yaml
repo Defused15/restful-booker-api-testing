@@ -1,4 +1,5 @@
 $kind: http-request
+description: Fetches the deleted booking. Expects 404 to confirm the record no longer exists.
 url: "{{base_url}}/booking/{{booking_id}}"
 method: GET
 headers:
@@ -15,4 +16,4 @@ scripts:
           pm.expect(pm.response.responseTime).to.be.below(500);
       });
     language: text/javascript
-order: 8000
+order: 11000

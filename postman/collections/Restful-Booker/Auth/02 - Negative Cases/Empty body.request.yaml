@@ -1,4 +1,5 @@
 $kind: http-request
+description: Sends a request with no body. Expects the API to reject it without issuing a token.
 url: "{{base_url}}/auth"
 method: POST
 headers:

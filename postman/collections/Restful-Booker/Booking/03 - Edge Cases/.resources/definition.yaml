@@ -1,4 +1,3 @@
 $kind: collection
-description: Tests boundary values and unusual inputs to verify the API handles
-  them gracefully.
+description: Tests boundary values and unusual inputs to verify the API handles them gracefully.
 order: 4000

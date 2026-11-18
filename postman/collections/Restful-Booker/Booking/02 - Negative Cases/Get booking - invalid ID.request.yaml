@@ -1,4 +1,5 @@
 $kind: http-request
+description: Requests a booking with a non-existent numeric ID. Expects 404.
 url: "{{base_url}}/booking/99999999999"
 method: GET
 headers:

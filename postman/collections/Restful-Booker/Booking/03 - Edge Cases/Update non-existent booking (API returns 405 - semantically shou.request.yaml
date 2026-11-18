@@ -1,5 +1,6 @@
 $kind: http-request
 name: Update non-existent booking (API returns 405 - semantically should be 404)
+description: "Attempts to update booking ID 99999999. Documents the known API behavior: returns 405 instead of the semantically correct 404."
 url: "{{base_url}}/booking/99999999"
 method: PUT
 headers:
@@ -32,23 +33,17 @@ body:
 auth:
   type: basic
   credentials:
-    password: "{{password}}"
     username: "{{username}}"
+    password: "{{password}}"
 scripts:
   - type: afterResponse
-    code: >-
-      // Restful-Booker returns 405 (Method Not Allowed) for non-existent
-      booking IDs.
-
+    code: |-
+      // Restful-Booker returns 405 (Method Not Allowed) for non-existent booking IDs.
       // The semantically correct response would be 404 (Not Found).
-
       // This test documents the actual API behavior.
-
-      pm.test("Status code is 405 - observed API behavior for non-existent ID",
-      function () {
+      pm.test("Status code is 405 - observed API behavior for non-existent ID", function () {
           pm.response.to.have.status(405);
       });
-
 
       pm.test("Response time < 800ms", function () {
           pm.expect(pm.response.responseTime).to.be.below(800);

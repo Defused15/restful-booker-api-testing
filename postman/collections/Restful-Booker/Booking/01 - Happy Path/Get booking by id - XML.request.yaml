@@ -1,0 +1,36 @@
+$kind: http-request
+description: "Requests the booking with Accept: application/xml. Restful-Booker returns XML but labels it text/html."
+url: "{{base_url}}/booking/{{booking_id}}"
+method: GET
+headers:
+  Accept: application/xml
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test("Body is XML with a booking root", function () {
+          const parsed = xml2Json(pm.response.text());
+          pm.expect(parsed).to.have.property("booking");
+      });
+
+      pm.test("XML booking matches current values", function () {
+          const b = xml2Json(pm.response.text()).booking;
+          pm.expect(b.firstname).to.eql(pm.collectionVariables.get("firstname"));
+          pm.expect(b.lastname).to.eql(pm.collectionVariables.get("lastname"));
+      });
+
+      // Observed quirk: the XML body is served as text/html instead of application/xml.
+      pm.test("Content-Type observed as text/html (API quirk)", function () {
+          pm.expect(pm.response.headers.get("Content-Type")).to.include("text/html");
+      });
+
+      pm.test("Response time < 500ms", function () {
+          pm.expect(pm.response.responseTime).to.be.below(500);
+      });
+    language: text/javascript
+order: 9000

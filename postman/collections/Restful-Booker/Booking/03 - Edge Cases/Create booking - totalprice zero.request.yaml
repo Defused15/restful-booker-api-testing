@@ -1,4 +1,5 @@
 $kind: http-request
+description: Verifies the API accepts 0 as a valid totalprice. Stores the booking ID for cleanup.
 url: "{{base_url}}/booking"
 method: POST
 headers:

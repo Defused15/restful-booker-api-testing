@@ -1,4 +1,5 @@
 $kind: http-request
+description: Sends totalprice as a string instead of a number. Documents the API's current permissive behavior.
 url: "{{base_url}}/booking"
 method: POST
 headers:
@@ -29,22 +30,24 @@ body:
     }"
 scripts:
   - type: afterResponse
-    code: >-
-      // Restful-Booker does not validate field types: sending totalprice as a
-      string
-
-      // returns 200 and the API coerces or ignores the value.
-
+    code: |-
+      // Restful-Booker does not validate field types: sending totalprice as a string
+      // returns 200 and stores totalprice as null.
       // A stricter API should return 400 Bad Request.
+      let res = pm.response.json();
 
-      pm.test("API returns 200 - observed: no type validation on totalprice",
-      function () {
+      pm.test("API returns 200 - observed: no type validation on totalprice", function () {
           pm.response.to.have.status(200);
       });
 
+      pm.test("Invalid totalprice is stored as null", function () {
+          pm.expect(res.booking.totalprice).to.be.null;
+      });
 
       pm.test("Response time < 500ms", function () {
           pm.expect(pm.response.responseTime).to.be.below(500);
       });
+
+      pm.collectionVariables.set("edge_booking_id_3", res.bookingid);
     language: text/javascript
 order: 3000

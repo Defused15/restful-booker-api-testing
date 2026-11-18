@@ -1,4 +1,3 @@
 $kind: collection
-description: Verifies the API does not execute injected payloads passed as
-  credential values.
+description: Verifies the API does not execute injected payloads passed as credential values.
 order: 4000

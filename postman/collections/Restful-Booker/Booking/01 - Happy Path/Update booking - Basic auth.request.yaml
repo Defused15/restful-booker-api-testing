@@ -1,0 +1,56 @@
+$kind: http-request
+description: "Full update authenticated only with an Authorization: Basic header (no token cookie)."
+url: "{{base_url}}/booking/{{booking_id}}"
+method: PUT
+headers:
+  Content-Type: application/json
+  Accept: application/json
+body:
+  type: json
+  content: |-
+    {
+        "firstname": "Basic",
+        "lastname": "Auth",
+        "totalprice": 321,
+        "depositpaid": false,
+        "bookingdates": {
+            "checkin": "2026-09-01",
+            "checkout": "2026-09-05"
+        },
+        "additionalneeds": "Late checkout"
+    }
+auth:
+  type: basic
+  credentials:
+    username: "{{username}}"
+    password: "{{password}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      let json = pm.response.json();
+      let req = JSON.parse(pm.request.body.raw);
+
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test("Booking updated with Basic auth", function () {
+          pm.expect(json.firstname).to.eql(req.firstname);
+          pm.expect(json.lastname).to.eql(req.lastname);
+          pm.expect(json.totalprice).to.eql(req.totalprice);
+          pm.expect(json.bookingdates).to.eql(req.bookingdates);
+      });
+
+      pm.test("Response time < 800ms", function () {
+          pm.expect(pm.response.responseTime).to.be.below(800);
+      });
+
+      pm.collectionVariables.set("firstname", req.firstname);
+      pm.collectionVariables.set("lastname", req.lastname);
+      pm.collectionVariables.set("totalprice", req.totalprice);
+      pm.collectionVariables.set("depositpaid", req.depositpaid);
+      pm.collectionVariables.set("checkin", req.bookingdates.checkin);
+      pm.collectionVariables.set("checkout", req.bookingdates.checkout);
+      pm.collectionVariables.set("additionalneeds", req.additionalneeds);
+    language: text/javascript
+order: 7000

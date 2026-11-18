@@ -1,0 +1,36 @@
+$kind: http-request
+description: A token cookie that was never issued must be rejected with 403.
+url: "{{base_url}}/booking/{{booking_id}}"
+method: PUT
+headers:
+  Content-Type: application/json
+  Accept: application/json
+  Cookie: token=invalid-token-123
+body:
+  type: json
+  content: |-
+    {
+        "firstname": "Hacker",
+        "lastname": "Attempt",
+        "totalprice": 1,
+        "depositpaid": false,
+        "bookingdates": {
+            "checkin": "2026-01-01",
+            "checkout": "2026-01-02"
+        },
+        "additionalneeds": ""
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 403 - invalid token rejected", function () {
+          pm.response.to.have.status(403);
+      });
+
+      pm.test("Response time < 800ms", function () {
+          pm.expect(pm.response.responseTime).to.be.below(800);
+      });
+    language: text/javascript
+order: 4000

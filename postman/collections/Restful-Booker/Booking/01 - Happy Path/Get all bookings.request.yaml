@@ -1,21 +1,19 @@
 $kind: http-request
+description: Expects a non-empty array of booking IDs from GET /booking.
 url: "{{base_url}}/booking"
 method: GET
 scripts:
   - type: afterResponse
-    code: >-
+    code: |-
       let json = pm.response.json();
-
 
       pm.test("Status code is 200", function () {
           pm.response.to.have.status(200);
       });
 
-
       pm.test("Response is an array", function () {
           pm.expect(json).to.be.an("array");
       });
-
 
       pm.test("Each item has bookingid", function () {
           json.forEach(item => {
@@ -23,11 +21,9 @@ scripts:
           });
       });
 
-
       pm.test("Content-Type is application/json", function () {
           pm.expect(pm.response.headers.get("Content-Type")).to.include("application/json");
       });
-
 
       pm.test("Response time < 500ms", function () {
           pm.expect(pm.response.responseTime).to.be.below(500);

@@ -1,4 +1,5 @@
 $kind: http-request
+description: Asserts GET /booking responds in under 500ms as a baseline performance check.
 url: "{{base_url}}/booking"
 method: GET
 scripts:

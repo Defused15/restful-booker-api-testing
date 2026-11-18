@@ -1,9 +1,12 @@
 # Restful Booker API Testing
 
 [![API Tests](https://github.com/defused15/restful-booker-api-testing/actions/workflows/api-tests.yml/badge.svg)](https://github.com/defused15/restful-booker-api-testing/actions/workflows/api-tests.yml)
-[![Test Report](https://img.shields.io/badge/Test%20Report-View%20Latest-blue)](https://defused15.github.io/restful-booker-api-testing/)
+[![QA Test Hub](https://img.shields.io/badge/QA%20Test%20Hub-Dashboard-blue)](https://qa.rcastillo.dev/projects/Restful-Booker.html)
+[![Raw Report](https://img.shields.io/badge/Raw%20Report-Request%20%26%20Response%20Details-lightgrey)](https://defused15.github.io/restful-booker-api-testing/)
 
-## [View Latest Test Report](https://defused15.github.io/restful-booker-api-testing/)
+## [View Test Dashboard on the QA Test Hub](https://qa.rcastillo.dev/projects/Restful-Booker.html)
+
+The QA Test Hub shows run history, pass-rate and duration trends, slowest requests, and each request's assertions. For full request and response bodies and headers of the latest run, see the [raw HTML report](https://defused15.github.io/restful-booker-api-testing/).
 
 Postman collection for testing the [Restful Booker](https://restful-booker.herokuapp.com) API, covering happy path, negative cases, edge cases, security, and performance scenarios. Automated via Newman and GitHub Actions.
 
@@ -13,21 +16,21 @@ Postman collection for testing the [Restful Booker](https://restful-booker.herok
 
 | Module | Folder | Tests |
 |--------|--------|-------|
-| Auth | 00 - Setup | Token generation |
+| Auth | 00 - Setup | Health check (`GET /ping`), token generation |
 | Auth | 01 - Happy Path | Valid login, token format, Content-Type, response time |
 | Auth | 02 - Negative Cases | Wrong password, wrong username, empty body |
 | Auth | 03 - Security | SQL injection, XSS attempt |
 | Auth | 04 - Performance | Response time < 500ms |
-| Booking | 00 - Setup | Create booking, store variables |
-| Booking | 01 - Happy Path | Get all, get by id (schema validation), filter by name, filter by dates (accepts params; filtering accuracy not validated — known API limitation), full update, partial update, delete, verify deletion |
-| Booking | 02 - Negative Cases | Invalid id, missing required fields, update/delete without auth |
-| Booking | 03 - Edge Cases | totalprice = 0, special characters in name, wrong type for totalprice, update non-existent booking |
+| Booking | 00 - Setup | Create booking (schema validation), store variables |
+| Booking | 01 - Happy Path | Get all, get by id (schema validation), filter by name, filter by name with no match (empty array), filter by dates (accepts params; filtering accuracy not validated — known API limitation), full update with token cookie (schema validation), full update with Basic auth, partial update, get by id as XML, delete, verify deletion |
+| Booking | 02 - Negative Cases | Invalid id, missing required fields, update/partial update/delete without auth, update with an invalid token |
+| Booking | 03 - Edge Cases | totalprice = 0, special characters in name, wrong type for totalprice (stored as null), update non-existent booking, cleanup of every edge-case booking |
 
 ---
 
 ## Requirements
 
-- [Node.js](https://nodejs.org) v18+
+- [Node.js](https://nodejs.org) v20+ (CI uses Node 24)
 - [Postman](https://www.postman.com/downloads/) (for running in the UI)
 
 ---
@@ -47,7 +50,7 @@ Postman collection for testing the [Restful Booker](https://restful-booker.herok
 Install dependencies:
 
 ```bash
-npm install
+npm ci
 ```
 
 Run with HTML report (local):
@@ -79,6 +82,10 @@ On scheduled runs, a `keepalive` job re-enables the workflow through the GitHub 
 
 After each run, the JUnit XML report is uploaded as an artifact and displayed inline in the GitHub Actions summary.
 
+Runs on `main` (push, schedule or manual) publish the Newman JSON report to the [QA Test Hub](https://qa.rcastillo.dev/projects/Restful-Booker.html) and deploy the raw HTML report to GitHub Pages. Pull request runs only test and report in the PR, so they never overwrite the published report.
+
+Third-party actions are pinned to full commit SHAs, with the release tag in a comment.
+
 ---
 
 ## Environment Variables
@@ -103,13 +110,26 @@ All test data is hardcoded in the collection. No manual configuration is needed 
 | Request | Test data used |
 |---------|----------------|
 | Booking Setup | Brandon Sanderson, price: 30, checkin: 2026-06-01, checkout: 2026-06-10 |
-| Full Update | Steve King, price: 33, checkin: 2026-07-01, checkout: 2026-07-15 |
+| Full Update (token cookie) | Steve King, price: 33, checkin: 2026-07-01, checkout: 2026-07-15 |
+| Full Update (Basic auth) | Basic Auth, price: 321, checkin: 2026-09-01, checkout: 2026-09-05 |
 | Edge - totalprice zero | Edge Case, price: 0, checkin: 2026-08-01, checkout: 2026-08-10 |
 | Edge - special characters | José García-López, price: 100, checkin: 2026-08-01, checkout: 2027-08-01 |
 | Edge - totalprice as string | Edge Case, price: "not-a-number", checkin: 2026-08-01, checkout: 2026-08-10 |
 | Edge - update non-existent booking | Ghost User, price: 99, checkin: 2025-01-01, checkout: 2025-01-10 |
 
 Collection variables (`booking_id`, `firstname`, `checkin`, etc.) are set automatically by the Setup scripts and shared across tests within the same run.
+
+---
+
+## Collection Source of Truth
+
+`Restful-Booker.postman_collection.json` (v2.1) is the source of truth: Newman runs it locally and in CI. The `postman/` folder is a Postman v3 (YAML) copy for the Postman app's local and git-connected workflow. After changing the JSON collection, regenerate the copy with the [Postman CLI](https://learning.postman.com/docs/postman-cli/postman-cli-installation/):
+
+```bash
+npm run postman:sync
+```
+
+Don't edit files under `postman/` by hand; changes there are overwritten on the next sync.
 
 ---
 
@@ -121,8 +141,9 @@ restful-booker-api-testing/
 │   └── workflows/
 │       └── api-tests.yml                    # GitHub Actions CI workflow
 ├── reports/                                 # Generated test reports (gitignored)
-├── Restful-Booker.postman_collection.json   # Main collection
-├── restful-booker.postman_environment.json  # Environment variables
+├── postman/                                 # Postman v3 (YAML) copy, generated from the JSON collection
+├── Restful-Booker.postman_collection.json   # Main collection (source of truth)
+├── restful-booker.postman_environment.json  # Environment variables (gitignored)
 ├── package.json                             # Newman scripts and dependencies
 └── README.md
 ```

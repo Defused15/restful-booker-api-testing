@@ -1,0 +1,26 @@
+$kind: http-request
+description: Filtering by a name that does not exist returns 200 with an empty array.
+url: "{{base_url}}/booking?firstname=NoSuchGuest&lastname=Nobody"
+method: GET
+queryParams:
+  firstname: NoSuchGuest
+  lastname: Nobody
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test("Response is an empty array", function () {
+          const json = pm.response.json();
+          pm.expect(json).to.be.an("array").that.is.empty;
+      });
+
+      pm.test("Response time < 500ms", function () {
+          pm.expect(pm.response.responseTime).to.be.below(500);
+      });
+    language: text/javascript
+order: 4000

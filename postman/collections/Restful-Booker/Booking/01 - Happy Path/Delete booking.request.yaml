@@ -1,4 +1,5 @@
 $kind: http-request
+description: Deletes the Setup booking. Expects 201 as the API's delete confirmation status.
 url: "{{base_url}}/booking/{{booking_id}}"
 method: DELETE
 headers:
@@ -8,8 +9,8 @@ headers:
 auth:
   type: basic
   credentials:
-    password: "{{password}}"
     username: "{{username}}"
+    password: "{{password}}"
 scripts:
   - type: afterResponse
     code: |-
@@ -21,4 +22,4 @@ scripts:
           pm.expect(pm.response.responseTime).to.be.below(800);
       });
     language: text/javascript
-order: 7000
+order: 10000
