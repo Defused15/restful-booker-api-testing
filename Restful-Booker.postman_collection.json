@@ -27,9 +27,8 @@
                       "    pm.response.to.have.status(201);",
                       "});",
                       "",
-                      "pm.test(\"Response time < 2000ms\", function () {",
-                      "    pm.expect(pm.response.responseTime).to.be.below(2000);",
-                      "});"
+                      "// No response-time check here: this request also absorbs the demo server's cold start.",
+                      ""
                     ]
                   }
                 }
@@ -42,7 +41,7 @@
                   "host": ["{{base_url}}"],
                   "path": ["ping"]
                 },
-                "description": "Confirms the API is up before the suite runs. Restful-Booker answers GET /ping with 201 Created.",
+                "description": "Confirms the API is up before the suite runs. Restful-Booker answers GET /ping with 201 Created. It has no response-time check because it absorbs the demo server's cold start.",
                 "auth": {
                   "type": "noauth"
                 }
