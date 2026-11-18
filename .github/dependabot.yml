@@ -1,0 +1,24 @@
+# Monthly update PRs for the pinned GitHub Actions and the npm dev tools.
+# Each ecosystem is grouped into a single PR to keep the noise down.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: ci
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      dev-tools:
+        patterns: ["*"]
+    commit-message:
+      prefix: chore
+      include: scope
