@@ -25,5 +25,12 @@ export default defineConfig({
   projects: [
     { name: 'desktop', use: { viewport: { width: 1440, height: 900 } } },
     { name: 'mobile', use: { viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true, deviceScaleFactor: 3 } },
+    // Layout stability in WebKit, where bubbling transitionend events once cut
+    // the table collapse short.
+    {
+      name: 'desktop-webkit',
+      grep: /filtering|paging|search keeps/,
+      use: { browserName: 'webkit', viewport: { width: 1440, height: 900 } },
+    },
   ],
 });

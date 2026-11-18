@@ -522,10 +522,14 @@
       mount.style.minHeight = to + 'px';
       const done = () => {
         mount.style.transition = ''; mount.style.minHeight = '';
-        mount.removeEventListener('transitionend', done); clearTimeout(timer); collapse = null;
+        mount.removeEventListener('transitionend', onEnd); clearTimeout(timer); collapse = null;
       };
+      // Only the container's own min-height transition ends the collapse.
+      // transitionend bubbles, so the segmented control's indicator (inside
+      // the table controls) would otherwise cut it short.
+      const onEnd = e => { if (e.target === mount && e.propertyName === 'min-height') done(); };
       const timer = setTimeout(done, 400);
-      mount.addEventListener('transitionend', done);
+      mount.addEventListener('transitionend', onEnd);
       collapse = done;
     }
 

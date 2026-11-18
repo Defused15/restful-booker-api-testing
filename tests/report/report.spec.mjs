@@ -101,19 +101,38 @@ async function filterAndSample(page, label) {
     const mount = document.getElementById('table');
     const seg = mount.querySelector('.seg');
     window.__frames = [];
+    window.__collapse = { start: 0, ownEnd: 0, release: 0 };
+    mount.addEventListener('transitionend', e => {
+      if (e.target === mount && e.propertyName === 'min-height') window.__collapse.ownEnd = performance.now();
+    });
+    new MutationObserver(() => {
+      const c = window.__collapse;
+      if (mount.style.transition && !c.start) c.start = performance.now();
+      if (c.start && !c.release && mount.style.minHeight === '') c.release = performance.now();
+    }).observe(mount, { attributes: true, attributeFilter: ['style'] });
     const tick = () => {
-      window.__frames.push({ h: mount.getBoundingClientRect().height, segY: seg.getBoundingClientRect().top });
+      window.__frames.push({ t: performance.now(), h: mount.getBoundingClientRect().height, segY: seg.getBoundingClientRect().top, held: mount.style.minHeight !== '' });
       if (window.__frames.length < 60) requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
   });
   await page.locator('#table .seg button', { hasText: label }).click();
-  await page.waitForFunction(() => window.__frames.length >= 60);
-  return page.evaluate(() => window.__frames);
+  await page.waitForFunction(() => window.__frames.length >= 60 && window.__collapse.release > 0);
+  const { frames, collapse } = await page.evaluate(() => ({ frames: window.__frames, collapse: window.__collapse }));
+  frames.collapse = collapse;
+  return frames;
 }
 
 function expectSmoothCollapse(frames) {
   const start = frames[0].h, end = frames[frames.length - 1].h;
+  // The collapse ends on its own min-height transition (or the 400 ms
+  // fallback), never on a transitionend bubbling up from the segmented
+  // control's indicator, which would cut it short.
+  const c = frames.collapse;
+  expect(c.start).toBeGreaterThan(0);
+  const ownEnded = c.ownEnd > 0 && c.release >= c.ownEnd - 1;
+  const fallback = c.release - c.start >= 390;
+  expect(ownEnded || fallback, JSON.stringify(c)).toBe(true);
   expect(end).toBeLessThan(start);
   // Heights only go down, with several in-between frames (no one-frame snap).
   for (let i = 1; i < frames.length; i++) expect(frames[i].h).toBeLessThanOrEqual(frames[i - 1].h + 0.5);
@@ -157,13 +176,18 @@ test('filtering near the end of the page glides instead of snapping', async ({ p
   const before = await page.locator('#table .seg').boundingBox();
   const frames = await filterAndSample(page, 'Failed');
   expectSmoothCollapse(frames);
-  // The control does not move on the click frame, and never jumps by more than
-  // a fraction of the total movement in a single frame.
+  // The control does not move on the click frame, and any movement is spread
+  // over time: several in-between positions over at least 150 ms, not a snap.
+  // (Frame-count based, so dropped frames under load do not fail the test.)
   expect(Math.abs(frames[0].segY - before.y)).toBeLessThan(0.5);
-  const total = Math.abs(frames[frames.length - 1].segY - before.y);
-  for (let i = 1; i < frames.length; i++) {
-    const step = Math.abs(frames[i].segY - frames[i - 1].segY);
-    if (total > 0) expect(step).toBeLessThanOrEqual(total * 0.5 + 0.5);
+  const y0 = before.y, y1 = frames[frames.length - 1].segY;
+  if (Math.abs(y1 - y0) > 1) {
+    const lo = Math.min(y0, y1) + 0.5, hi = Math.max(y0, y1) - 0.5;
+    const mid = frames.filter(f => f.segY > lo && f.segY < hi);
+    expect(mid.length).toBeGreaterThanOrEqual(2);
+    const moving = frames.filter(f => Math.abs(f.segY - y0) > 0.5);
+    const lastMove = frames.findIndex(f => Math.abs(f.segY - y1) < 0.5);
+    expect(frames[lastMove].t - moving[0].t).toBeGreaterThanOrEqual(150);
   }
   // It ends at the bottom of the page with no blank space below the content.
   await expectNoBlankSpace(page);
