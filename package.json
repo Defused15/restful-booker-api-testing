@@ -11,6 +11,6 @@
   },
   "devDependencies": {
     "@playwright/test": "1.65.1",
-    "newman": "^6.1.0"
+    "newman": "^6.2.3"
   }
 }
