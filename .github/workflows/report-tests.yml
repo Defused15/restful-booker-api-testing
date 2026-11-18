@@ -35,6 +35,14 @@ jobs:
     name: Test Report Page
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Official Playwright image: Chromium and its system libraries are
+    # preinstalled, so the job never waits on apt mirrors. Keep the tag in
+    # sync with @playwright/test (the check below fails with a clear message).
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.1-noble
+      options: --ipc=host
+    env:
+      PLAYWRIGHT_IMAGE_VERSION: 1.65.1
 
     steps:
       - name: Checkout repository
@@ -49,26 +57,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Chromium is keyed by the Playwright version, so it downloads only when
-      # Playwright is updated. System libraries are installed on every run.
-      - name: Get Playwright version
-        id: pw
-        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
-
-      - name: Cache Playwright browsers
-        id: pw-cache
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}-chromium
-
-      - name: Install Chromium
-        if: steps.pw-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium
-
-      - name: Install Chromium system dependencies
-        if: steps.pw-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps chromium
+      - name: Check Playwright version matches the image
+        run: |
+          installed=$(node -p "require('@playwright/test/package.json').version")
+          if [ "$installed" != "$PLAYWRIGHT_IMAGE_VERSION" ]; then
+            echo "::error::@playwright/test is $installed but the container image is v$PLAYWRIGHT_IMAGE_VERSION. Update the image tag and PLAYWRIGHT_IMAGE_VERSION in this workflow."
+            exit 1
+          fi
 
       - name: Run report and upload-script tests
         run: npm run test:report
