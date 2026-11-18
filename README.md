@@ -72,8 +72,10 @@ The workflow at [.github/workflows/api-tests.yml](.github/workflows/api-tests.ym
 
 - Every push to `main`
 - Every pull request targeting `main`
-- Daily at 08:00 UTC (scheduled)
+- Weekly on Mondays at 08:00 UTC (scheduled)
 - Manual trigger via `workflow_dispatch`
+
+On scheduled runs, a `keepalive` job re-enables the workflow through the GitHub API. This resets GitHub's 60-day inactivity timer, so the schedule doesn't get disabled when the repository goes quiet.
 
 After each run, the JUnit XML report is uploaded as an artifact and displayed inline in the GitHub Actions summary.
 
