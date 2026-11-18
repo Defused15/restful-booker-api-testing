@@ -105,73 +105,7 @@ jobs:
           HUB_REPO: Defused15/test-hub
           PROJECT_NAME: Restful-Booker
           REPORT_PATH: ./reports/newman-report.json
-        run: |
-          node -e "
-            const fs    = require('fs');
-            const https = require('https');
-
-            const reportPath = process.env.REPORT_PATH;
-            if (!fs.existsSync(reportPath)) {
-              console.log('⚠️  newman-report.json not found, skipping hub upload');
-              process.exit(0);
-            }
-
-            const content  = fs.readFileSync(reportPath).toString('base64');
-            const token    = process.env.HUB_TOKEN;
-            const repo     = process.env.HUB_REPO;
-            const project  = process.env.PROJECT_NAME;
-            const apiPath  = '/repos/' + repo + '/contents/projects/' + project + '/latest.json';
-
-            const headers = {
-              'Authorization': 'Bearer ' + token,
-              'Accept':        'application/vnd.github+json',
-              'User-Agent':    'qa-hub',
-              'Content-Type':  'application/json'
-            };
-
-            const getReq = https.request(
-              { hostname: 'api.github.com', path: apiPath, method: 'GET', headers },
-              res => {
-                let data = '';
-                res.on('data', c => data += c);
-                res.on('end', () => {
-                  let sha = '';
-                  try { sha = JSON.parse(data).sha || ''; } catch {}
-
-                  const body = JSON.stringify({
-                    message: 'chore: update ' + project + ' report',
-                    content,
-                    ...(sha ? { sha } : {})
-                  });
-
-                  const putReq = https.request(
-                    {
-                      hostname: 'api.github.com',
-                      path: apiPath,
-                      method: 'PUT',
-                      headers: { ...headers, 'Content-Length': Buffer.byteLength(body) }
-                    },
-                    r => {
-                      let out = '';
-                      r.on('data', c => out += c);
-                      r.on('end', () => {
-                        if (r.statusCode === 200 || r.statusCode === 201) {
-                          console.log('✅  Report pushed to hub (HTTP ' + r.statusCode + ')');
-                        } else {
-                          console.error('❌  Hub upload failed (HTTP ' + r.statusCode + ')');
-                          console.error(out);
-                          process.exit(1);
-                        }
-                      });
-                    }
-                  );
-                  putReq.write(body);
-                  putReq.end();
-                });
-              }
-            );
-            getReq.end();
-          "
+        run: node scripts/publish-hub.mjs
 
       - name: Trigger Test Hub Rebuild
         if: always() && steps.hub_push.outcome == 'success'
@@ -208,41 +142,6 @@ jobs:
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: reports/site/
-
-  report-ui:
-    name: Test Report Page
-    if: github.event_name != 'schedule'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    permissions:
-      contents: read
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Set up Node.js
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: "24"
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
-
-      - name: Run report page tests
-        run: npm run test:report
-
-      - name: Upload screenshots and test results
-        if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: report-page-tests
-          path: test-results/
-          retention-days: 14
 
   deploy:
     name: Deploy Report to GitHub Pages

@@ -82,7 +82,7 @@ On scheduled runs, a `keepalive` job re-enables the workflow through the GitHub 
 
 After each run, the JUnit XML report is uploaded as an artifact and displayed inline in the GitHub Actions summary.
 
-Runs on `main` (push, schedule or manual) publish the Newman JSON report to the [QA Test Hub](https://qa.rcastillo.dev/projects/Restful-Booker.html) and deploy the request report to GitHub Pages. Only the built page (`reports/site/`) is deployed, never the raw Newman JSON. Pull request runs only test and report in the PR, so they never overwrite the published report.
+Runs on `main` (push, schedule or manual) publish the Newman JSON report (via `scripts/publish-hub.mjs`) to the [QA Test Hub](https://qa.rcastillo.dev/projects/Restful-Booker.html) and deploy the request report to GitHub Pages. Only the built page (`reports/site/`) is deployed, never the raw Newman JSON. Pull request runs only test and report in the PR, so they never overwrite the published report.
 
 Third-party actions are pinned to full commit SHAs, with the release tag in a comment. Dependabot (`.github/dependabot.yml`) opens one grouped PR a month for action updates and one for npm dev tools.
 
@@ -130,7 +130,7 @@ npm run test:ci                                              # produces reports/
 npm run report:build -- reports/newman-report.json reports/site
 ```
 
-The page is covered by build tests (escaping and redaction) and Playwright tests (keyboard, touch, paging and filtering stability, URL state, contrast in both themes, hostile input). Screenshots are written to `test-results/screenshots/`.
+The page is covered by build tests (escaping and redaction), unit tests for the Hub upload script, and Playwright tests (keyboard, touch, paging and filtering stability, URL state, contrast in both themes, hostile input). Screenshots are written to `test-results/screenshots/`. In CI these run in their own workflow ([.github/workflows/report-tests.yml](.github/workflows/report-tests.yml)), only when the report code, tests or dependencies change, with the Playwright browser cached.
 
 ```bash
 npx playwright install chromium   # once
