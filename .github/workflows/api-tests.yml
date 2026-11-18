@@ -89,6 +89,15 @@ jobs:
       - name: Run API tests
         run: npm run test:ci
 
+      # Request-level report (assertions, requests and responses, secrets masked).
+      # Only reports/site/ is published to GitHub Pages, never the raw Newman
+      # JSON; htmlextra stays available there as htmlextra.html.
+      - name: Build HTML report
+        if: always() && hashFiles('reports/newman-report.json') != ''
+        run: |
+          npm run report:build -- reports/newman-report.json reports/site
+          if [ -f reports/htmlextra.html ]; then cp reports/htmlextra.html reports/site/; fi
+
       # Only main publishes to the QA Hub: pull request runs (and forks without
       # secrets) must not overwrite the published report.
       - name: Push report to QA Hub
@@ -201,7 +210,42 @@ jobs:
         if: always()
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
-          path: reports/
+          path: reports/site/
+
+  report-ui:
+    name: Test Report Page
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run report page tests
+        run: npm run test:report
+
+      - name: Upload screenshots and test results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: report-page-tests
+          path: test-results/
+          retention-days: 14
 
   deploy:
     name: Deploy Report to GitHub Pages
